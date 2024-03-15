@@ -5,7 +5,11 @@ import machine_coding.parking_lot.repositories.GateRepository;
 
 public class GateServiceImpl implements GateService {
 
-    private GateRepository gateRepository = new GateRepository();
+    private GateRepository gateRepository;
+
+    public GateServiceImpl(GateRepository gateRepository) {
+        this.gateRepository = gateRepository;
+    }
 
     @Override
     public Gate getGateById(int gateId) {

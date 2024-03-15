@@ -1,22 +1,29 @@
 package machine_coding.parking_lot.services;
 
-import machine_coding.parking_lot.models.Gate;
-import machine_coding.parking_lot.models.Ticket;
-import machine_coding.parking_lot.models.Vehicle;
-import machine_coding.parking_lot.models.VehicleType;
+import machine_coding.parking_lot.models.*;
+import machine_coding.parking_lot.repositories.TicketRepository;
+import machine_coding.parking_lot.strategies.spot_assignment.AssignSpotStrategy;
+
+import java.util.Date;
 
 public class TicketServiceImpl implements TicketService {
 
     private GateService gateService;
     private VehicleService vehicleService;
+    private ParkingLotService parkingLotService;
+    private TicketRepository ticketRepository;
+    private AssignSpotStrategy assignSpotStrategy;
 
-    public TicketServiceImpl(GateService gateService, VehicleService vehicleService) {
+    public TicketServiceImpl(GateService gateService, VehicleService vehicleService, ParkingLotService parkingLotService, TicketRepository ticketRepository, AssignSpotStrategy assignSpotStrategy) {
         this.gateService = gateService;
         this.vehicleService = vehicleService;
+        this.parkingLotService = parkingLotService;
+        this.ticketRepository = ticketRepository;
+        this.assignSpotStrategy = assignSpotStrategy;
     }
 
     @Override
-    public Ticket generateTicket(int gateId, String vehicleNumber, String vehicleType) {
+    public Ticket generateTicket(int gateId, String vehicleNumber, String vehicleType) throws Exception {
         /*
             Need to create a Ticket obj, store it in DB & return
             Ticket obj contains - Gate, Vehicle, AssignedSpot, EntryTime
@@ -30,7 +37,15 @@ public class TicketServiceImpl implements TicketService {
         Gate entryGate = gateService.getGateById(gateId);
         VehicleType type = VehicleType.getVehicleTypeFromString(vehicleType);
         Vehicle vehicle = vehicleService.createIfNotExists(vehicleNumber, type);
-        return null;
+        ParkingLot parkingLot = parkingLotService.getParkingLotByGateId(gateId);
+        if(parkingLot == null) throw new Exception("Invalid Gate Id");
+        Spot assignedSpot = assignSpotStrategy.assignSpot(type, parkingLot);
+        Ticket ticket = new Ticket();
+        ticket.setEntryTime(new Date());
+        ticket.setEntryGate(entryGate);
+        ticket.setVehicle(vehicle);
+        ticket.setAssignedSpot(assignedSpot);
+        return ticketRepository.insertTicket(ticket);
     }
 
 }

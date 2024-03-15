@@ -8,6 +8,10 @@ public class VehicleServiceImpl implements VehicleService {
 
     private VehicleRepository vehicleRepository;
 
+    public VehicleServiceImpl(VehicleRepository vehicleRepository) {
+        this.vehicleRepository = vehicleRepository;
+    }
+
     @Override
     public Vehicle createIfNotExists(String vehicleNumber, VehicleType vehicleType) {
         return vehicleRepository.createIfNotExists(vehicleNumber, vehicleType);
