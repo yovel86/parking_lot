@@ -90,7 +90,7 @@ public class ParkingLotRunner {
         generateTicketRequestDTO.setVehicleNumber("KA 01 5432");
         generateTicketResponseDTO = ticketController.generateTicket(generateTicketRequestDTO);
         System.out.println(generateTicketResponseDTO);
-        
+
     }
 
 }
