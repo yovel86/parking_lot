@@ -5,7 +5,6 @@ import java.util.List;
 public class ParkingLot extends BaseModel {
 
     private List<Gate> gates;
-    private int id;
     private List<Floor> floors;
 
     public List<Floor> getFloors() {

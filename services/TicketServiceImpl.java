@@ -35,7 +35,7 @@ public class TicketServiceImpl implements TicketService {
             4. Can easily get the "EntryTime" using the Date obj
         */
         Gate entryGate = gateService.getGateById(gateId);
-        VehicleType type = VehicleType.getVehicleTypeFromString(vehicleType);
+        VehicleType type = VehicleType.getVehicleTypeFromString(vehicleType); // Converting String to Enum
         Vehicle vehicle = vehicleService.createIfNotExists(vehicleNumber, type);
         ParkingLot parkingLot = parkingLotService.getParkingLotByGateId(gateId);
         if(parkingLot == null) throw new Exception("Invalid Gate Id");

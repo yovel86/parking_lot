@@ -7,6 +7,6 @@ import machine_coding.parking_lot.models.VehicleType;
 
 public interface AssignSpotStrategy {
 
-    public Spot assignSpot(VehicleType vehicleType, ParkingLot parkingLot) throws NoSpotsAvailableException;
+    Spot assignSpot(VehicleType vehicleType, ParkingLot parkingLot) throws NoSpotsAvailableException;
 
 }

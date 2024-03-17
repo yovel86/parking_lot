@@ -33,7 +33,7 @@ public class TicketController {
             response.setErrorMsg(e.getMessage());
         }
         // Extract and pass the data from requestDTO to Service layer to generate ticket
-        // and receive the ticket and send it back to the client in the format of DTO
+        // then receive the ticket and send it back to the client in the format of DTO
         try {
             Ticket ticket = ticketService.generateTicket(requestDto.getGateId(), requestDto.getVehicleNumber(), requestDto.getVehicleType());
             responseDTO.setTicket(ticket);

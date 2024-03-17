@@ -6,6 +6,12 @@ public class Spot extends BaseModel {
     private SpotStatus spotStatus;
     private VehicleType vehicleType;
 
+    public Spot(String name, SpotStatus spotStatus, VehicleType vehicleType) {
+        this.name = name;
+        this.spotStatus = spotStatus;
+        this.vehicleType = vehicleType;
+    }
+
     public String getName() {
         return name;
     }

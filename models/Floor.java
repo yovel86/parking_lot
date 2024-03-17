@@ -4,20 +4,9 @@ import java.util.List;
 
 public class Floor extends BaseModel {
 
-    private int id;
     private int floorNum;
     private List<Section> sections;
     private FloorStatus floorStatus;
-
-     @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public int getFloorNum() {
         return floorNum;
