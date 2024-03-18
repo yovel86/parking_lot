@@ -48,4 +48,9 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.insertTicket(ticket);
     }
 
+    @Override
+    public Ticket getTicketById(int ticketId) {
+        return ticketRepository.getTicketById(ticketId);
+    }
+
 }

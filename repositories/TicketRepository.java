@@ -24,4 +24,8 @@ public class TicketRepository {
         return ticket;
     }
 
+    public Ticket getTicketById(int ticketId) {
+        return ticketDB.get(ticketId);
+    }
+
 }
