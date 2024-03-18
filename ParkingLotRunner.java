@@ -1,14 +1,15 @@
 package machine_coding.parking_lot;
 
+import machine_coding.parking_lot.controllers.InvoiceController;
+import machine_coding.parking_lot.dtos.GenerateInvoiceRequestDTO;
+import machine_coding.parking_lot.dtos.GenerateInvoiceResponseDTO;
 import machine_coding.parking_lot.dtos.GenerateTicketRequestDTO;
 import machine_coding.parking_lot.dtos.GenerateTicketResponseDTO;
+import machine_coding.parking_lot.factories.CalculateFeesStrategyFactory;
 import machine_coding.parking_lot.models.*;
+import machine_coding.parking_lot.repositories.*;
 import machine_coding.parking_lot.services.*;
 import machine_coding.parking_lot.controllers.TicketController;
-import machine_coding.parking_lot.repositories.GateRepository;
-import machine_coding.parking_lot.repositories.ParkingLotRepository;
-import machine_coding.parking_lot.repositories.TicketRepository;
-import machine_coding.parking_lot.repositories.VehicleRepository;
 import machine_coding.parking_lot.strategies.spot_assignment.AssignSpotStrategy;
 import machine_coding.parking_lot.strategies.spot_assignment.NearestFirstSpotAssignmentStrategy;
 
@@ -66,6 +67,23 @@ public class ParkingLotRunner {
             put(1, parkingLot);
         }};
 
+        Slab slab1 = new Slab(1, VehicleType.CAR, 0, 2, 10);
+        Slab slab2 = new Slab(2, VehicleType.CAR, 2, 4, 20);
+        Slab slab3 = new Slab(3, VehicleType.CAR, 4, 8, 25);
+        Slab slab4 = new Slab(4, VehicleType.CAR, 8, -1, 40);
+        Map<Integer, Slab> slabData = new HashMap<>(){{
+            put(1, slab1);
+            put(2, slab2);
+            put(3, slab3);
+            put(4, slab4);
+        }};
+        SlabRepository slabRepository = new SlabRepository(slabData);
+        SlabService slabService = new SlabServiceImpl(slabRepository);
+
+        InvoiceRepository invoiceRepository = new InvoiceRepository();
+
+        CalculateFeesStrategyFactory calculateFeesStrategyFactory = new CalculateFeesStrategyFactory(slabService);
+
         // Initializing Services & Repositories
         GateRepository gateRepository = new GateRepository(gateData);
         ParkingLotRepository parkingLotRepository = new ParkingLotRepository(parkingLotData);
@@ -78,18 +96,35 @@ public class ParkingLotRunner {
         ParkingLotService parkingLotService = new ParkingLotServiceImpl(parkingLotRepository);
         VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository);
         TicketService ticketService = new TicketServiceImpl(gateService, vehicleService, parkingLotService, ticketRepository, assignSpotStrategy);
+        InvoiceService invoiceService = new InvoiceServiceImpl(ticketService, gateService, calculateFeesStrategyFactory, invoiceRepository);
 
         TicketController ticketController = new TicketController(ticketService);
+        InvoiceController invoiceController = new InvoiceController(invoiceService);
 
         // Mimicking sending data from client in the format of DTO
         GenerateTicketRequestDTO generateTicketRequestDTO = new GenerateTicketRequestDTO(1, "TN 01 6532", VehicleType.CAR.toString());
 
-        GenerateTicketResponseDTO generateTicketResponseDTO = ticketController.generateTicket(generateTicketRequestDTO);
-        System.out.println(generateTicketResponseDTO);
+        GenerateTicketResponseDTO ticketResponseDTO = ticketController.generateTicket(generateTicketRequestDTO);
+        System.out.println(ticketResponseDTO);
+        int ticketId = ticketResponseDTO.getTicket().getId();
 
         generateTicketRequestDTO.setVehicleNumber("KA 01 5432");
-        generateTicketResponseDTO = ticketController.generateTicket(generateTicketRequestDTO);
-        System.out.println(generateTicketResponseDTO);
+        ticketResponseDTO = ticketController.generateTicket(generateTicketRequestDTO);
+        System.out.println(ticketResponseDTO);
+
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Generate Invoice
+        GenerateInvoiceRequestDTO invoiceRequestDTO = new GenerateInvoiceRequestDTO();
+        invoiceRequestDTO.setTicketId(ticketId);
+        invoiceRequestDTO.setGateId(2);
+
+        GenerateInvoiceResponseDTO invoiceResponseDTO = invoiceController.generateInvoice(invoiceRequestDTO);
+        System.out.println(invoiceResponseDTO);
 
     }
 
